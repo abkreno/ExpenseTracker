@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import { Link, Stack, router } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 
-const TrackScreen = () => {
+const RecordCreate = () => {
   const [selectedAccount, setSelectedAccount] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [amount, setAmount] = useState('');
@@ -10,6 +12,7 @@ const TrackScreen = () => {
   // Sample account and category data
   const accounts = ['Account 1', 'Account 2', 'Account 3'];
   const categories = ['Category A', 'Category B', 'Category C'];
+  const isPresented = router.canGoBack();
 
   // Function to handle record submission
   const handleTrack = () => {
@@ -71,4 +74,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TrackScreen;
+export default RecordCreate;
