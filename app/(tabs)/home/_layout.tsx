@@ -4,10 +4,15 @@ export default function HomeLayout() {
   return (
     <Stack>
       <Stack.Screen
-        name="create"
+        name="index"
         options={{
-          headerShown: true,
-          title: 'Add Record',
+          title: 'Home',
+        }}
+      />
+      <Stack.Screen
+        name="add_record"
+        options={{
+          headerShown: false,
           presentation: 'modal',
         }}
       />

@@ -20,7 +20,6 @@ const IndexPage = () => {
   });
   return (
     <View style={styles.container}>
-      <Stack.Screen options={{ headerShown: true, title: 'Home' }} />
       <View style={styles.navigationContainer}>
         {accounts.map((account, index) => (
           <Link
@@ -41,9 +40,7 @@ const IndexPage = () => {
         style={styles.fab}
         icon="plus"
         onPress={() => {
-          // Handle navigation to the screen for creating a record
-          // You can replace 'CreateRecordScreen' with the actual screen name
-          router.push('/home/create');
+          router.push('/home/add_record');
         }}
       />
     </View>
