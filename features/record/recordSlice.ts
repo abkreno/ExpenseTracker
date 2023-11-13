@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from '../store';
+import { RootState } from 'features/store';
 import { backupRecords } from './recordAPI';
 
 // Define the record type

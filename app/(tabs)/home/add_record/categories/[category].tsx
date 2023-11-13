@@ -1,8 +1,8 @@
 // A page that displays a dropdown of all the available categories from the store
 
-import { Stack, router, useLocalSearchParams } from 'expo-router';
-import { Text, View } from 'react-native';
-import { List, MD3Colors } from 'react-native-paper';
+import ListSection from 'components/ListSection';
+import { Stack, useLocalSearchParams } from 'expo-router';
+import { View } from 'react-native';
 
 const categoriesData = {
   foods_drinks: {
@@ -12,10 +12,12 @@ const categoriesData = {
       {
         title: 'Groceries',
         key: 'groceries',
+        icon: 'food',
       },
       {
         title: 'Restaurants',
         key: 'restaurants',
+        icon: 'silverware-fork-knife',
       },
     ],
   },
@@ -26,10 +28,12 @@ const categoriesData = {
       {
         title: 'Lending',
         key: 'lending',
+        icon: 'cash-multiple',
       },
       {
         title: 'Renting',
         key: 'renting',
+        icon: 'home',
       },
     ],
   },
@@ -39,7 +43,6 @@ export default function Page() {
   const { category } = useLocalSearchParams<{
     category: keyof typeof categoriesData;
   }>();
-  console.log(category);
   const title = (category && categoriesData[category].title) || category;
   return (
     <View>
@@ -48,18 +51,19 @@ export default function Page() {
           title,
         }}
       />
-      <List.Section>
-        <List.Subheader>Subcategories</List.Subheader>
-        {category &&
-          categoriesData[category].subcategories.map((subcategory) => (
-            <List.Item
-              key={subcategory.key}
-              title={subcategory.title}
-              // right={() => <List.Icon icon="chevron-right" />}
-              onPress={() => null}
-            />
-          ))}
-      </List.Section>
+      <ListSection
+        title="Subcategories"
+        items={
+          (category &&
+            categoriesData[category].subcategories.map((subcategory) => ({
+              name: subcategory.title || '',
+              route: '',
+              icon: subcategory.icon,
+              value: '',
+            }))) ||
+          []
+        }
+      />
     </View>
   );
 }

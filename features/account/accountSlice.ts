@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from '../store';
+import { RootState } from 'features/store';
 import { backupAccounts, loadAccounts } from './accountAPI';
 
 // Define the account type
@@ -10,7 +10,7 @@ export interface Account {
     amount: number;
     currency: string;
     lastUpdatedAt: string;
-  }
+  };
   type: 'CASH' | 'GENERAL';
 }
 
@@ -78,5 +78,8 @@ export const { addAccount, removeAccount } = accountSlice.actions;
 
 export const selectAccounts = (state: RootState) => state.account.accounts;
 export const selectTotalBalance = (state: RootState) =>
-  state.account.accounts.reduce((total, account) => total + account.balance.amount, 0);
+  state.account.accounts.reduce(
+    (total, account) => total + account.balance.amount,
+    0
+  );
 export default accountSlice.reducer;

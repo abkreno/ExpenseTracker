@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
-import { Link, Stack, router } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import { List } from 'react-native-paper';
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import { Stack } from 'expo-router';
+import { Button, MD3Theme, useTheme } from 'react-native-paper';
+import ListSection from 'components/ListSection';
 
 const RecordCreate = () => {
+  const theme = useTheme();
+  const styles = makeStyles(theme);
   // Function to handle record submission
   const handleSave = () => {
     // Handle adding the record to your data store or API
@@ -13,43 +14,73 @@ const RecordCreate = () => {
 
   return (
     <View style={styles.container}>
-      <Stack.Screen
-        options={{
-          title: 'Add Record',
-        }}
-      />
-      <List.Section title="General">
-        <List.Item
-          title="Select Account"
-          right={() => <List.Icon icon="chevron-right" />}
+      <View style={styles.navigationContainer}>
+        <Stack.Screen
+          options={{
+            title: 'Add Record',
+          }}
         />
-        <List.Item
-          title="Select Category"
-          onPress={() => router.push('/home/add_record/categories')}
-          right={() => <List.Icon icon="chevron-right" />}
+        <ListSection
+          title="General"
+          items={[
+            {
+              name: 'Select Account',
+              route: '/home/add_record/accounts',
+              icon: 'bank',
+              value: '',
+              showRightIcon: true,
+            },
+            {
+              name: 'Select Category',
+              route: '/home/add_record/categories',
+              icon: 'circle',
+              value: '',
+              showRightIcon: true,
+            },
+          ]}
         />
-        <List.Item
-          title="Amount"
-          right={() => <List.Icon icon="chevron-right" />}
-        />
-      </List.Section>
-      <List.Section title="More Detail">
-        <List.Item
-          title="Note"
-          right={() => <List.Icon icon="chevron-right" />}
-        />
-      </List.Section>
 
-      <Button title="Save" onPress={handleSave} />
+        <ListSection
+          title="More Detail"
+          items={[
+            {
+              name: 'Note',
+              route: '/',
+              icon: 'note',
+              value: '',
+            },
+          ]}
+        />
+      </View>
+      <Button
+        style={styles.button}
+        buttonColor={theme.colors.secondary}
+        textColor={theme.colors.onSecondary}
+        onPress={handleSave}
+      >
+        Save
+      </Button>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-  },
-});
+const makeStyles = (theme: MD3Theme) =>
+  StyleSheet.create({
+    navigationContainer: {
+      flex: 1,
+    },
+    container: {
+      flex: 1,
+      padding: 0,
+      paddingVertical: 20,
+      backgroundColor: theme.colors.background,
+    },
+    button: {
+      width: '80%',
+      alignSelf: 'center',
+      marginBottom: 20,
+      borderRadius: theme.roundness,
+    },
+  });
 
 export default RecordCreate;
