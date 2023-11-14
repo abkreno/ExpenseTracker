@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
-import { Link, Stack, router } from 'expo-router';
+import { View, StyleSheet, ScrollView } from 'react-native';
+import { router } from 'expo-router';
 import { useSelector } from 'react-redux';
 import {
   loadAccountsAsync,
@@ -9,77 +9,113 @@ import {
 } from 'features/account/accountSlice';
 import { useAppDispatch } from 'features/hooks';
 import {
-  Chip,
+  Divider,
   FAB,
   Icon,
-  MD3DarkTheme,
+  Text,
   MD3Theme,
-  Surface,
   TouchableRipple,
   useTheme,
 } from 'react-native-paper';
-// import { FAB } from 'react-native-paper';
 
-const IndexPage = () => {
+export default function HomePage() {
   const dispatch = useAppDispatch();
   const accounts = useSelector(selectAccounts);
   const totalBalance = useSelector(selectTotalBalance);
   const theme = useTheme();
-  const styles = makeStyles(MD3DarkTheme);
+  const styles = makeStyles(theme);
   useEffect(() => {
     dispatch(loadAccountsAsync());
   });
   return (
     <View style={styles.container}>
-      <ScrollView horizontal style={styles.navigationContainer}>
-        {accounts.map((account, index) => (
+      <ScrollView>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.navigationContainer}
+        >
+          {accounts.map((account, index) => (
+            <TouchableRipple
+              key={index}
+              style={styles.card}
+              onPress={() => {
+                router.push(`/home/account/${account.id}`);
+              }}
+            >
+              <View style={styles.accountContainer}>
+                <Icon
+                  source={account.type === 'CASH' ? 'cash' : 'bank'}
+                  size={24}
+                />
+                <Text style={styles.accountText}>{account.name}</Text>
+                <Text style={styles.accountAmount}>
+                  {account.balance.amount} {account.balance.currency}
+                </Text>
+              </View>
+            </TouchableRipple>
+          ))}
+          {/* Add new account */}
           <TouchableRipple
-            key={index}
+            style={styles.card}
             onPress={() => {
-              router.push(`/home/add_record/accounts/${account.id}`);
+              router.push('/home/add_account');
             }}
           >
-            <View style={styles.navigationCard}>
-              <Icon
-                source={account.type === 'CASH' ? 'cash' : 'bank'}
-                size={24}
-              />
-              <Text style={styles.cardText}>
-                {account.name} ({account.balance.amount}{' '}
-                {account.balance.currency})
-              </Text>
+            <View style={styles.accountContainer}>
+              <Icon source="plus" size={24} />
+              <Text style={styles.accountText}>Add Account</Text>
             </View>
           </TouchableRipple>
-        ))}
+        </ScrollView>
+        <Divider style={styles.divider} />
+        <View style={styles.card}>
+          <View style={styles.balanceContainer}>
+            <Text style={styles.balanceText}>Total Balance</Text>
+            <Text style={styles.balanceAmount}>{totalBalance}</Text>
+          </View>
+        </View>
+        <Divider style={styles.divider} />
       </ScrollView>
-      <View style={styles.balanceContainer}>
-        <Text style={styles.balanceText}>Total Balance</Text>
-        <Text style={styles.balanceAmount}>{totalBalance}</Text>
-        <FAB
-          style={styles.fab}
-          icon="plus"
-          color={theme.colors.onSecondary}
-          onPress={() => {
-            router.push('/home/add_record');
-          }}
-        />
-      </View>
-      {/* Floating Action Button */}
+      <FAB
+        style={styles.fab}
+        icon="plus"
+        color={theme.colors.onSecondary}
+        onPress={() => {
+          router.push('/home/add_record');
+        }}
+      />
     </View>
   );
-};
+}
 
 const makeStyles = (theme: MD3Theme) =>
   StyleSheet.create({
     container: {
-      flex: 1,
       padding: 20,
       backgroundColor: theme.colors.background,
+      height: '100%',
+    },
+    divider: {
+      marginVertical: 20,
+    },
+    navigationContainer: {},
+    card: {
+      backgroundColor: theme.colors.primaryContainer,
+      marginHorizontal: 10,
+      paddingHorizontal: 10,
+      borderRadius: 10,
+    },
+    accountContainer: {
+      justifyContent: 'center',
+      height: 100,
+      width: 160,
     },
     balanceContainer: {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
+      paddingVertical: 20,
     },
     balanceText: {
       color: theme.colors.onBackground,
@@ -89,24 +125,15 @@ const makeStyles = (theme: MD3Theme) =>
       color: theme.colors.onBackground,
       ...theme.fonts.displayLarge,
     },
-    navigationContainer: {},
-    navigationCard: {
-      height: 60,
-      backgroundColor: theme.colors.primaryContainer,
-      justifyContent: 'center',
-      marginHorizontal: 10,
-      paddingHorizontal: 20,
-      borderRadius: theme.roundness,
-    },
-    cardText: {
+    accountText: {
       color: theme.colors.onPrimaryContainer,
       verticalAlign: 'middle',
-      ...theme.fonts.bodyLarge,
+      ...theme.fonts.labelMedium,
     },
-    cardAmount: {
+    accountAmount: {
       color: theme.colors.onPrimaryContainer,
       verticalAlign: 'middle',
-      ...theme.fonts.bodyLarge,
+      ...theme.fonts.labelLarge,
     },
     fab: {
       position: 'absolute',
@@ -118,5 +145,3 @@ const makeStyles = (theme: MD3Theme) =>
       borderRadius: 50,
     },
   });
-
-export default IndexPage;

@@ -1,9 +1,8 @@
 // A page that displays a dropdown of all the available categories from the store
 
 import ListSection from 'components/ListSection';
-import { Stack, router } from 'expo-router';
-import { Text, View } from 'react-native';
-import { List, MD3Colors } from 'react-native-paper';
+import { Stack } from 'expo-router';
+import { View } from 'react-native';
 
 export default function Page() {
   return (

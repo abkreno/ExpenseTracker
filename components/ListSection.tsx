@@ -1,14 +1,6 @@
 import { router } from 'expo-router';
 import { StyleSheet } from 'react-native';
-import {
-  List,
-  MD2Colors,
-  MD3Colors,
-  MD3DarkTheme,
-  MD3Theme,
-  Text,
-  useTheme,
-} from 'react-native-paper';
+import { List, MD3Theme, Text, useTheme } from 'react-native-paper';
 
 export default function ListSection({
   title,

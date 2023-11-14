@@ -4,7 +4,7 @@ import { Stack } from 'expo-router';
 import { Button, MD3Theme, useTheme } from 'react-native-paper';
 import ListSection from 'components/ListSection';
 
-export default function AddRecord() {
+export default function AddAccount() {
   const theme = useTheme();
   const styles = makeStyles(theme);
   // Function to handle record submission
@@ -17,7 +17,7 @@ export default function AddRecord() {
       <View style={styles.navigationContainer}>
         <Stack.Screen
           options={{
-            title: 'Add Record',
+            title: 'Add Account',
           }}
         />
         <ListSection
