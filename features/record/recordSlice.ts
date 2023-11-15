@@ -2,13 +2,28 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from 'features/store';
 import { backupRecords } from './recordAPI';
 
+export const currencySymbolMap = {
+  USD: '$',
+  CNY: '¥',
+  JPY: '¥',
+  EUR: '€',
+  GBP: '£',
+  KRW: '₩',
+  EGP: '£',
+};
+
 // Define the record type
 export interface Record {
   id: string;
-  accountId: string;
-  category: string;
   amount: number;
+  currency: keyof typeof currencySymbolMap;
+  accountId: string | null;
+  categoryId: string | null;
   type: 'EXPENSE' | 'INCOME' | 'TRANSFER';
+  date: string; // ISO date string
+  notes: string;
+  payee: string;
+  photo: string | null; // URL or URI of the photo
 }
 
 interface RecordState {

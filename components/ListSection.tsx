@@ -9,10 +9,11 @@ export default function ListSection({
   title: string;
   items: {
     name: string;
-    route: string;
-    icon: string;
+    route?: string;
+    icon: string | false;
     value: string;
     showRightIcon?: boolean;
+    onPress?: () => void;
   }[];
 }) {
   const theme = useTheme();
@@ -27,15 +28,21 @@ export default function ListSection({
           titleStyle={styles.listItemLeftText}
           style={styles.listItem}
           onPress={() => {
-            router.push(item.route);
+            if (item.route) {
+              router.push(item.route);
+            } else if (item.onPress) {
+              item.onPress();
+            }
           }}
-          left={(props) => (
-            <List.Icon
-              {...props}
-              color={theme.colors.onBackground}
-              icon={item.icon}
-            />
-          )}
+          left={(props) =>
+            item.icon ? (
+              <List.Icon
+                {...props}
+                color={theme.colors.onBackground}
+                icon={item.icon}
+              />
+            ) : null
+          }
           right={(props) => (
             <>
               <Text style={styles.listItemRightText}>{item.value}</Text>

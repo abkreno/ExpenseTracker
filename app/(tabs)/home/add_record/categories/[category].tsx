@@ -1,49 +1,29 @@
 // A page that displays a dropdown of all the available categories from the store
 
 import ListSection from 'components/ListSection';
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { Stack, router, useLocalSearchParams } from 'expo-router';
+import {
+  Category,
+  selectCategoryById,
+  selectChildCategories,
+} from 'features/category/categorySlice';
+import { useAppDispatch } from 'features/hooks';
+import { setCategoryId } from 'features/recordForm/recordFormSlice';
+import { RootState } from 'features/store';
 import { View } from 'react-native';
-
-const categoriesData = {
-  foods_drinks: {
-    title: 'Foods & Drinks',
-    key: 'foods_drinks',
-    subcategories: [
-      {
-        title: 'Groceries',
-        key: 'groceries',
-        icon: 'food',
-      },
-      {
-        title: 'Restaurants',
-        key: 'restaurants',
-        icon: 'silverware-fork-knife',
-      },
-    ],
-  },
-  lending_renting: {
-    title: 'Lending & Renting',
-    key: 'lending_renting',
-    subcategories: [
-      {
-        title: 'Lending',
-        key: 'lending',
-        icon: 'cash-multiple',
-      },
-      {
-        title: 'Renting',
-        key: 'renting',
-        icon: 'home',
-      },
-    ],
-  },
-};
+import { shallowEqual, useSelector } from 'react-redux';
 
 export default function Page() {
-  const { category } = useLocalSearchParams<{
-    category: keyof typeof categoriesData;
+  const { category: categoryId } = useLocalSearchParams<{
+    category: Category['id'];
   }>();
-  const title = (category && categoriesData[category].title) || category;
+  const dispatch = useAppDispatch();
+  const category = useSelector(selectCategoryById(categoryId || ''));
+  const title = category?.name || '';
+  const childCategories = useSelector(
+    selectChildCategories(categoryId || ''),
+    shallowEqual
+  );
   return (
     <View>
       <Stack.Screen
@@ -55,9 +35,13 @@ export default function Page() {
         title="Subcategories"
         items={
           (category &&
-            categoriesData[category].subcategories.map((subcategory) => ({
-              name: subcategory.title || '',
-              route: '',
+            childCategories.map((subcategory) => ({
+              name: subcategory.name || '',
+              onPress: () => {
+                // Handle selecting the category
+                dispatch(setCategoryId(category.id));
+                router.push('/home/add_record');
+              },
               icon: subcategory.icon,
               value: '',
             }))) ||

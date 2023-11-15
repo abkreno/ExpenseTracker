@@ -17,6 +17,7 @@ import {
   TouchableRipple,
   useTheme,
 } from 'react-native-paper';
+import { loadCategoriesAsync } from 'features/category/categorySlice';
 
 export default function HomePage() {
   const dispatch = useAppDispatch();
@@ -26,7 +27,8 @@ export default function HomePage() {
   const styles = makeStyles(theme);
   useEffect(() => {
     dispatch(loadAccountsAsync());
-  });
+    dispatch(loadCategoriesAsync());
+  }, []);
   return (
     <View style={styles.container}>
       <ScrollView>
