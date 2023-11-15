@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
-import { StyleSheet } from 'react-native';
-import { List, MD3Theme, Text, useTheme } from 'react-native-paper';
+import { StyleSheet, Text } from 'react-native';
+import { List, MD3Theme, useTheme } from 'react-native-paper';
 
 export default function ListSection({
   title,
@@ -13,6 +13,7 @@ export default function ListSection({
     icon: string | false;
     value: string;
     showRightIcon?: boolean;
+    isRequired?: boolean;
     onPress?: () => void;
   }[];
 }) {
@@ -45,7 +46,16 @@ export default function ListSection({
           }
           right={(props) => (
             <>
-              <Text style={styles.listItemRightText}>{item.value}</Text>
+              <Text
+                style={{
+                  ...styles.listItemRightText,
+                  color: item.value
+                    ? theme.colors.onBackground
+                    : theme.colors.error,
+                }}
+              >
+                {item.value || (item.isRequired && 'Required')}
+              </Text>
               {item.showRightIcon && (
                 <List.Icon
                   {...props}
@@ -85,5 +95,6 @@ const makeStyles = (theme: MD3Theme) =>
       textAlign: 'center',
       color: theme.colors.onBackground,
       paddingTop: 3,
+      maxWidth: '50%',
     },
   });

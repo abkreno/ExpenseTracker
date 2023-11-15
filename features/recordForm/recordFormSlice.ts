@@ -1,8 +1,13 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { loadAccounts } from 'features/account/accountAPI';
+import { loadAccountsAsync } from 'features/account/accountSlice';
+import { backupRecords, loadRecords } from 'features/record/recordAPI';
 import { currencySymbolMap, Record } from 'features/record/recordSlice';
 import { RootState } from 'features/store';
 
-interface RecordFormState extends Omit<Record, 'id'> {}
+interface RecordFormState extends Omit<Record, 'id'> {
+  status: 'idle' | 'loading' | 'failed';
+}
 
 const initialState: RecordFormState = {
   type: 'EXPENSE',
@@ -14,7 +19,24 @@ const initialState: RecordFormState = {
   notes: '',
   payee: '',
   photo: null,
+  status: 'idle',
 };
+
+export const saveRecord = createAsyncThunk<
+  Record[],
+  void,
+  { state: { recordForm: RecordFormState } }
+>('recordForm/saveRecord', async (_, { getState }) => {
+  const { recordForm } = getState();
+  const { status, ...record } = recordForm;
+  const records = await loadRecords();
+  const uniqueId = Math.max(...records.map((record) => +record.id)) + 1;
+  const updatedRecord = {
+    id: uniqueId.toString(),
+    ...record,
+  };
+  return [...records, updatedRecord];
+});
 
 export const recordFormSlice = createSlice({
   name: 'recordForm',
@@ -54,6 +76,19 @@ export const recordFormSlice = createSlice({
       state.photo = action.payload;
     },
   },
+  extraReducers: (builder) => {
+    builder.addCase(saveRecord.pending, (state) => {
+      state.status = 'loading';
+    });
+    builder.addCase(saveRecord.fulfilled, (state) => {
+      state.status = 'idle';
+    });
+    builder.addCase(loadAccountsAsync.fulfilled, (state, action) => {
+      if (!state.accountId) {
+        state.accountId = action.payload[0].id || null;
+      }
+    });
+  },
 });
 
 export const selectType = (state: RootState) => state.recordForm.type;
@@ -78,12 +113,14 @@ export const selectDate = (state: RootState) => state.recordForm.date;
 
 export const selectNotes = (state: RootState) => state.recordForm.notes;
 
-export const selectCanSaveRecord = (state: RootState) => {
-  const { amount, accountId, categoryId } = state.recordForm;
-  return !!(Math.abs(amount) > 0 && accountId && categoryId);
-};
-
-export const { setType, setAccountId, setCategoryId, setAmount, setCurrency } =
-  recordFormSlice.actions;
+export const {
+  setType,
+  setAccountId,
+  setCategoryId,
+  setAmount,
+  setCurrency,
+  setNotes,
+  setDate,
+} = recordFormSlice.actions;
 
 export default recordFormSlice.reducer;

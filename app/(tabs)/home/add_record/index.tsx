@@ -1,28 +1,20 @@
-import React, { useRef, useState, useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import {
   View,
   StyleSheet,
-  TextInput,
-  NativeSyntheticEvent,
-  TextInputChangeEventData,
   Keyboard,
-  GestureResponderEvent,
   TouchableWithoutFeedback,
-  Pressable,
 } from 'react-native';
 import { Stack, router } from 'expo-router';
 import {
   Button,
-  Chip,
   MD3Theme,
   SegmentedButtons,
-  Text,
   useTheme,
 } from 'react-native-paper';
 import ListSection from 'components/ListSection';
 import { useSelector } from 'react-redux';
 import {
-  selectCanSaveRecord,
   selectAccount,
   selectCategory,
   selectType,
@@ -30,6 +22,8 @@ import {
   setAmount,
   selectCurrency,
   selectAmount,
+  selectNotes,
+  saveRecord,
 } from 'features/recordForm/recordFormSlice';
 import { useAppDispatch } from 'features/hooks';
 import { Record } from 'features/record/recordSlice';
@@ -39,13 +33,19 @@ export default function AddRecord() {
   const theme = useTheme();
   const recordType = useSelector(selectType);
   const styles = makeStyles(theme, recordType);
+  const amount = useSelector(selectAmount);
+  const currency = useSelector(selectCurrency);
+  const type = useSelector(selectType);
   const recordAccount = useSelector(selectAccount);
   const recordCategory = useSelector(selectCategory);
-  const canSaveRecord = useSelector(selectCanSaveRecord);
+  const canSaveRecord = useMemo(() => {
+    return !!(Math.abs(amount) > 0 && recordAccount && recordCategory);
+  }, [amount, recordAccount, recordCategory]);
   const dispatch = useAppDispatch();
   // Function to handle record submission
   const handleSave = () => {
-    // Handle adding the record to your data store or API
+    dispatch(saveRecord());
+    router.push('/home');
   };
 
   return (
@@ -91,9 +91,9 @@ export default function AddRecord() {
               ]}
             />
             <AmountInput
-              amount={useSelector(selectAmount)}
-              currency={useSelector(selectCurrency)}
-              type={useSelector(selectType)}
+              amount={amount}
+              currency={currency}
+              type={type}
               onChange={(amount: number) => {
                 dispatch(setAmount(amount));
               }}
@@ -111,6 +111,7 @@ export default function AddRecord() {
                 icon: 'bank',
                 value: recordAccount?.name || '',
                 showRightIcon: true,
+                isRequired: true,
               },
               {
                 name: 'Select Category',
@@ -118,6 +119,7 @@ export default function AddRecord() {
                 icon: 'circle',
                 value: recordCategory?.name || '',
                 showRightIcon: true,
+                isRequired: true,
               },
             ]}
           />
@@ -126,18 +128,20 @@ export default function AddRecord() {
             title="More Detail"
             items={[
               {
-                name: 'Note',
-                route: '/',
+                name: 'Notes',
+                route: '/home/add_record/notes',
                 icon: 'note',
-                value: '',
+                value: useSelector(selectNotes),
+                showRightIcon: true,
               },
             ]}
           />
         </View>
         <Button
           style={styles.button}
-          buttonColor={theme.colors.secondary}
-          textColor={theme.colors.onSecondary}
+          buttonColor={theme.colors.primary}
+          textColor={theme.colors.onPrimary}
+          labelStyle={styles.buttonLabel}
           onPress={handleSave}
           disabled={!canSaveRecord}
         >
@@ -163,10 +167,14 @@ const makeStyles = (theme: MD3Theme, type: Record['type']) =>
       backgroundColor: theme.colors.primary,
       padding: 20,
     },
+    buttonLabel: {
+      ...theme.fonts.bodyLarge,
+      color: theme.colors.onPrimary,
+    },
     button: {
       width: '80%',
       alignSelf: 'center',
       marginBottom: 20,
-      borderRadius: theme.roundness,
+      borderRadius: 20,
     },
   });

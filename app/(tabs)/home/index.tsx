@@ -18,6 +18,8 @@ import {
   useTheme,
 } from 'react-native-paper';
 import { loadCategoriesAsync } from 'features/category/categorySlice';
+import { loadRecordsAsync, selectRecords } from 'features/record/recordSlice';
+import ListSection from 'components/ListSection';
 
 export default function HomePage() {
   const dispatch = useAppDispatch();
@@ -25,9 +27,11 @@ export default function HomePage() {
   const totalBalance = useSelector(selectTotalBalance);
   const theme = useTheme();
   const styles = makeStyles(theme);
+  const records = useSelector(selectRecords);
   useEffect(() => {
     dispatch(loadAccountsAsync());
     dispatch(loadCategoriesAsync());
+    dispatch(loadRecordsAsync());
   }, []);
   return (
     <View style={styles.container}>
@@ -78,6 +82,17 @@ export default function HomePage() {
           </View>
         </View>
         <Divider style={styles.divider} />
+        <ListSection
+          title="Recent Transactions"
+          items={records.map((record, index) => ({
+            name: record.accountId || 'No Account',
+            value: record.amount.toString(),
+            icon: record.type === 'EXPENSE' ? 'minus' : 'plus',
+            onPress: () => {
+              router.push(`/home/record/${record.id}`);
+            },
+          }))}
+        />
       </ScrollView>
       <FAB
         style={styles.fab}

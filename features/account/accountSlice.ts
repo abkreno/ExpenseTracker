@@ -17,11 +17,13 @@ export interface Account {
 interface AccountState {
   accounts: Account[];
   status: 'idle' | 'loading' | 'failed';
+  defaultAccountId: string | null;
 }
 
 const initialState: AccountState = {
   accounts: [],
   status: 'idle',
+  defaultAccountId: null,
 };
 
 export const backupAccountsAsync = createAsyncThunk<
@@ -70,6 +72,7 @@ export const accountSlice = createSlice({
       .addCase(loadAccountsAsync.fulfilled, (state, action) => {
         state.status = 'idle';
         state.accounts = action.payload;
+        state.defaultAccountId = action.payload[0]?.id ?? null;
       });
   },
 });

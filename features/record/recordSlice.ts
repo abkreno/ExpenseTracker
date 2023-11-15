@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from 'features/store';
-import { backupRecords } from './recordAPI';
+import { backupRecords, loadRecords } from './recordAPI';
+import { saveRecord } from 'features/recordForm/recordFormSlice';
 
 export const currencySymbolMap = {
   USD: '$',
@@ -22,7 +23,7 @@ export interface Record {
   type: 'EXPENSE' | 'INCOME' | 'TRANSFER';
   date: string; // ISO date string
   notes: string;
-  payee: string;
+  payee: string | null;
   photo: string | null; // URL or URI of the photo
 }
 
@@ -48,6 +49,15 @@ export const backupRecordsAsync = createAsyncThunk<
   return response;
 });
 
+export const loadRecordsAsync = createAsyncThunk<
+  Record[],
+  void,
+  { state: { record: RecordState } }
+>('record/loadRecords', async () => {
+  const response = await loadRecords();
+  return response;
+});
+
 export const recordSlice = createSlice({
   name: 'record',
   initialState,
@@ -68,6 +78,17 @@ export const recordSlice = createSlice({
       })
       .addCase(backupRecordsAsync.fulfilled, (state, action) => {
         state.status = 'idle';
+      })
+      .addCase(loadRecordsAsync.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(loadRecordsAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+        state.records = action.payload;
+      })
+      .addCase(saveRecord.fulfilled, (state, action) => {
+        state.records = action.payload;
+        backupRecords(action.payload);
       });
   },
 });
