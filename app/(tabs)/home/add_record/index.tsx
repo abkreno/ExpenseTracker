@@ -108,7 +108,7 @@ export default function AddRecord() {
               {
                 name: 'Select Account',
                 route: '/home/add_record/accounts',
-                icon: 'bank',
+                iconName: 'bank',
                 value: recordAccount?.name || '',
                 showRightIcon: true,
                 isRequired: true,
@@ -116,7 +116,8 @@ export default function AddRecord() {
               {
                 name: 'Select Category',
                 route: '/home/add_record/categories',
-                icon: 'circle',
+                iconName: recordCategory?.icon || 'help',
+                color: recordCategory?.color || theme.colors.primary,
                 value: recordCategory?.name || '',
                 showRightIcon: true,
                 isRequired: true,
@@ -130,7 +131,7 @@ export default function AddRecord() {
               {
                 name: 'Notes',
                 route: '/home/add_record/notes',
-                icon: 'note',
+                iconName: 'note',
                 value: useSelector(selectNotes),
                 showRightIcon: true,
               },

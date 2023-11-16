@@ -1,12 +1,14 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { loadAccounts } from 'features/account/accountAPI';
 import { loadAccountsAsync } from 'features/account/accountSlice';
+import { selectFlatCategories } from 'features/category/categorySlice';
 import { backupRecords, loadRecords } from 'features/record/recordAPI';
 import { currencySymbolMap, Record } from 'features/record/recordSlice';
 import { RootState } from 'features/store';
 
 interface RecordFormState extends Omit<Record, 'id'> {
   status: 'idle' | 'loading' | 'failed';
+  targetAccountId?: string | null;
 }
 
 const initialState: RecordFormState = {
@@ -14,6 +16,7 @@ const initialState: RecordFormState = {
   amount: 0,
   currency: 'EGP',
   accountId: null,
+  targetAccountId: null,
   categoryId: null,
   date: new Date().toISOString(),
   notes: '',
@@ -100,9 +103,8 @@ export const selectAccount = (state: RootState) => {
 export const selectCategory = (state: RootState) => {
   const { categoryId } = state.recordForm;
   if (!categoryId) return null;
-  return state.category.categories.find(
-    (category) => category.id === categoryId
-  );
+  const flatCategories = selectFlatCategories(state);
+  return flatCategories.find((category) => category.id === categoryId);
 };
 
 export const selectAmount = (state: RootState) => state.recordForm.amount;

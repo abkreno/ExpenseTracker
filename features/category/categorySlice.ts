@@ -8,8 +8,8 @@ export interface Category {
   name: string;
   slug: string;
   icon: string;
-  level: 'PARENT' | 'CHILD' | 'GRANDCHILD';
-  childrenIds: string[];
+  color: string;
+  children: Category[];
 }
 
 interface CategoryState {
@@ -77,13 +77,19 @@ export const { addCategory, removeCategory } = categorySlice.actions;
 export const selectCategories = (state: RootState) => state.category.categories;
 
 export const selectParentCategories = (state: RootState) =>
-  state.category.categories.filter((category) => category.level === 'PARENT');
+  state.category.categories;
+
+export const selectFlatCategories = (state: RootState) => {
+  return state.category.categories.flatMap((category) => [
+    category,
+    ...(category.children ?? []),
+  ]);
+};
 
 export const selectCategoryById =
   (categoryId: string) => (state: RootState) => {
-    return state.category.categories.find(
-      (category) => category.id === categoryId
-    );
+    const flatCategories = selectFlatCategories(state);
+    return flatCategories.find((category) => category.id === categoryId);
   };
 
 export const selectChildCategories =
@@ -92,9 +98,7 @@ export const selectChildCategories =
       (category) => category.id === categoryId
     );
     if (!category) return [];
-    return category.childrenIds
-      .map((childId) => selectCategoryById(childId)(state))
-      .filter(Boolean) as Category[];
+    return category.children;
   };
 
 export default categorySlice.reducer;

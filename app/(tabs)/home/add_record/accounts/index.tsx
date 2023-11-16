@@ -31,7 +31,7 @@ export default function AccountPage() {
               router.push('/home/add_record');
             }
           },
-          icon: account.type === 'CASH' ? 'cash-multiple' : 'bank',
+          iconName: account.type === 'CASH' ? 'cash-multiple' : 'bank',
           value: '',
         }))}
       />

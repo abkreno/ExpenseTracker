@@ -6,12 +6,14 @@ import { backupAccounts, loadAccounts } from './accountAPI';
 export interface Account {
   id: string;
   name: string;
+  initialBalance: number;
   balance: {
     amount: number;
     currency: string;
     lastUpdatedAt: string;
   };
   type: 'CASH' | 'GENERAL';
+  color: string;
 }
 
 interface AccountState {
@@ -78,8 +80,10 @@ export const accountSlice = createSlice({
 });
 
 export const { addAccount, removeAccount } = accountSlice.actions;
-
 export const selectAccounts = (state: RootState) => state.account.accounts;
+export const selectAccountById = (accountId: string) => (state: RootState) => {
+  return selectAccounts(state).find((account) => account.id === accountId);
+};
 export const selectTotalBalance = (state: RootState) =>
   state.account.accounts.reduce(
     (total, account) => total + account.balance.amount,

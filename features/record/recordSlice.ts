@@ -96,7 +96,8 @@ export const recordSlice = createSlice({
 export const { addRecord, removeRecord } = recordSlice.actions;
 
 export const selectRecords = (state: RootState) => state.record.records;
-export const selectRecordsByAccount = (state: RootState, accountId: string) =>
-  state.record.records.filter((record) => record.accountId === accountId);
+export const selectRecordsByAccount =
+  (accountId: string) => (state: RootState) =>
+    state.record.records.filter((record) => record.accountId === accountId);
 
 export default recordSlice.reducer;

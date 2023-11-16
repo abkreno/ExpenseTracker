@@ -30,7 +30,6 @@ export default function AccountPage() {
               router.push('/home/add_record');
             }
           },
-          icon: false,
           value: '',
         }))}
       />

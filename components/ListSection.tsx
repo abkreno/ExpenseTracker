@@ -1,6 +1,8 @@
 import { router } from 'expo-router';
-import { StyleSheet, Text } from 'react-native';
+import { ScrollView, StyleSheet, Text } from 'react-native';
 import { List, MD3Theme, useTheme } from 'react-native-paper';
+import { IconSource } from 'react-native-paper/lib/typescript/components/Icon';
+import Icon from './Icon';
 
 export default function ListSection({
   title,
@@ -10,8 +12,9 @@ export default function ListSection({
   items: {
     name: string;
     route?: string;
-    icon: string | false;
+    iconName?: string;
     value: string;
+    color?: string;
     showRightIcon?: boolean;
     isRequired?: boolean;
     onPress?: () => void;
@@ -22,51 +25,53 @@ export default function ListSection({
   return (
     <List.Section style={styles.section}>
       <List.Subheader style={styles.title}>{title}</List.Subheader>
-      {items.map((item, index) => (
-        <List.Item
-          key={index}
-          title={item.name}
-          titleStyle={styles.listItemLeftText}
-          style={styles.listItem}
-          onPress={() => {
-            if (item.route) {
-              router.push(item.route);
-            } else if (item.onPress) {
-              item.onPress();
-            }
-          }}
-          left={(props) =>
-            item.icon ? (
-              <List.Icon
-                {...props}
-                color={theme.colors.onBackground}
-                icon={item.icon}
-              />
-            ) : null
-          }
-          right={(props) => (
-            <>
-              <Text
-                style={{
-                  ...styles.listItemRightText,
-                  color: item.value
-                    ? theme.colors.onBackground
-                    : theme.colors.error,
-                }}
-              >
-                {item.value || (item.isRequired && 'Required')}
-              </Text>
-              {item.showRightIcon && (
+      <ScrollView>
+        {items.map((item, index) => (
+          <List.Item
+            key={index}
+            title={item.name}
+            titleStyle={styles.listItemLeftText}
+            style={styles.listItem}
+            onPress={() => {
+              if (item.route) {
+                router.push(item.route);
+              } else if (item.onPress) {
+                item.onPress();
+              }
+            }}
+            left={(props) =>
+              item.iconName ? (
                 <List.Icon
                   {...props}
-                  color={theme.colors.onBackground}
-                  icon="chevron-right"
+                  color={item.color || theme.colors.onBackground}
+                  icon={() => <Icon name={item.iconName} color={item.color} />}
                 />
-              )}
-            </>
-          )}
-        />
-      ))}
+              ) : null
+            }
+            right={(props) => (
+              <>
+                <Text
+                  style={{
+                    ...styles.listItemRightText,
+                    color: item.value
+                      ? theme.colors.onBackground
+                      : theme.colors.error,
+                  }}
+                >
+                  {item.value || (item.isRequired && 'Required')}
+                </Text>
+                {item.showRightIcon && (
+                  <List.Icon
+                    {...props}
+                    color={theme.colors.onBackground}
+                    icon="chevron-right"
+                  />
+                )}
+              </>
+            )}
+          />
+        ))}
+      </ScrollView>
     </List.Section>
   );
 }

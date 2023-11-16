@@ -1,42 +1,27 @@
 import { Account } from './accountSlice';
-
-const mockedAccounts: Account[] = [
-  {
-    id: '1',
-    name: 'Cash',
-    balance: {
-      amount: 100,
-      currency: 'USD',
-      lastUpdatedAt: '2021-01-01',
-    },
-    type: 'CASH',
-  },
-  {
-    id: '2',
-    name: 'General',
-    balance: {
-      amount: 1000,
-      currency: 'USD',
-      lastUpdatedAt: '2021-01-01',
-    },
-    type: 'GENERAL',
-  },
-  {
-    id: '3',
-    name: 'Savings',
-    balance: {
-      amount: 10000,
-      currency: 'USD',
-      lastUpdatedAt: '2021-01-01',
-    },
-    type: 'GENERAL',
-  },
-];
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export function backupAccounts(accounts: Account[]) {
-  return new Promise<void>((resolve) => setTimeout(() => resolve(), 1000));
+  // save accounts to local storage
+  return AsyncStorage.setItem('accounts', JSON.stringify(accounts));
 }
 
-export function loadAccounts() {
-  return new Promise<Account[]>((resolve) => setTimeout(() => resolve(mockedAccounts), 1000));
+export async function loadAccounts() {
+  // load accounts from local storage
+  try {
+    const accounts = await AsyncStorage.getItem('accounts');
+    if (accounts) {
+      const accountsParsed = JSON.parse(accounts);
+      if (Array.isArray(accountsParsed)) {
+        return accountsParsed as Account[];
+      } else {
+        return [];
+      }
+    } else {
+      return [];
+    }
+  } catch (err) {
+    console.log('Error loading accounts from local storage', err);
+    return [];
+  }
 }

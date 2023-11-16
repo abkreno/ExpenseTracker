@@ -8,6 +8,19 @@ import {
 } from 'react-native';
 import { Text, useTheme } from 'react-native-paper';
 
+export function getRecordAmountColor(type: Record['type'], dark = false) {
+  switch (type) {
+    case 'EXPENSE':
+      return dark ? 'red' : 'lightcoral';
+    case 'INCOME':
+      return dark ? 'green' : 'lightgreen';
+    case 'TRANSFER':
+      return dark ? 'black' : 'white';
+    default:
+      return 'white';
+  }
+}
+
 export default function AmountInput({
   amount,
   currency,
@@ -121,12 +134,7 @@ export default function AmountInput({
         style={{
           fontSize: amountFontSize,
           textAlign: 'right',
-          color:
-            type === 'EXPENSE'
-              ? 'lightcoral'
-              : type === 'INCOME'
-              ? 'lightgreen'
-              : theme.colors.onPrimary,
+          color: getRecordAmountColor(type),
         }}
       >
         {amountStr}

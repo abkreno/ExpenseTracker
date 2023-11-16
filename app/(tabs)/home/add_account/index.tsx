@@ -1,16 +1,24 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Stack } from 'expo-router';
+import { Stack, router } from 'expo-router';
 import { Button, MD3Theme, useTheme } from 'react-native-paper';
 import ListSection from 'components/ListSection';
+import { saveAccount } from 'features/accountForm/accountFormSlice';
+import { useAppDispatch } from 'features/hooks';
 
 export default function AddAccount() {
   const theme = useTheme();
   const styles = makeStyles(theme);
+  const dispatch = useAppDispatch();
   // Function to handle record submission
   const handleSave = () => {
-    // Handle adding the record to your data store or API
+    dispatch(saveAccount());
+    router.push('/home');
   };
+
+  const canSaveAccount = useMemo(() => {
+    return true;
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -24,18 +32,28 @@ export default function AddAccount() {
           title="General"
           items={[
             {
-              name: 'Select Account',
-              route: '/home/add_record/accounts',
-              icon: 'bank',
+              name: 'Account Name',
+              route: '/',
+              iconName: 'account',
               value: '',
-              showRightIcon: true,
             },
             {
-              name: 'Select Category',
-              route: '/home/add_record/categories',
-              icon: 'circle',
+              name: 'Account Type',
+              route: '/',
+              iconName: 'account',
               value: '',
-              showRightIcon: true,
+            },
+            {
+              name: 'Initial Balance',
+              route: '/',
+              iconName: 'account',
+              value: '',
+            },
+            {
+              name: 'Currency',
+              route: '/',
+              iconName: 'account',
+              value: '',
             },
           ]}
         />
@@ -44,9 +62,9 @@ export default function AddAccount() {
           title="More Detail"
           items={[
             {
-              name: 'Note',
+              name: 'Color',
               route: '/',
-              icon: 'note',
+              iconName: 'account',
               value: '',
             },
           ]}
@@ -54,9 +72,11 @@ export default function AddAccount() {
       </View>
       <Button
         style={styles.button}
+        labelStyle={styles.buttonLabel}
         buttonColor={theme.colors.secondary}
         textColor={theme.colors.onSecondary}
         onPress={handleSave}
+        disabled={!canSaveAccount}
       >
         Save
       </Button>
@@ -72,13 +92,21 @@ const makeStyles = (theme: MD3Theme) =>
     container: {
       flex: 1,
       padding: 0,
-      paddingVertical: 20,
+      paddingBottom: 20,
       backgroundColor: theme.colors.background,
+    },
+    topFormContainer: {
+      backgroundColor: theme.colors.primary,
+      padding: 20,
+    },
+    buttonLabel: {
+      ...theme.fonts.bodyLarge,
+      color: theme.colors.onPrimary,
     },
     button: {
       width: '80%',
       alignSelf: 'center',
       marginBottom: 20,
-      borderRadius: theme.roundness,
+      borderRadius: 20,
     },
   });

@@ -12,6 +12,7 @@ import { setCategoryId } from 'features/recordForm/recordFormSlice';
 import { RootState } from 'features/store';
 import { View } from 'react-native';
 import { shallowEqual, useSelector } from 'react-redux';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export default function Page() {
   const { category: categoryId } = useLocalSearchParams<{
@@ -39,10 +40,11 @@ export default function Page() {
               name: subcategory.name || '',
               onPress: () => {
                 // Handle selecting the category
-                dispatch(setCategoryId(category.id));
+                dispatch(setCategoryId(subcategory.id));
                 router.push('/home/add_record');
               },
-              icon: subcategory.icon,
+              iconName: subcategory.icon,
+              color: subcategory.color,
               value: '',
             }))) ||
           []

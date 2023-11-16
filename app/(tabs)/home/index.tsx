@@ -19,7 +19,7 @@ import {
 } from 'react-native-paper';
 import { loadCategoriesAsync } from 'features/category/categorySlice';
 import { loadRecordsAsync, selectRecords } from 'features/record/recordSlice';
-import ListSection from 'components/ListSection';
+import RecordList from 'components/RecordList';
 
 export default function HomePage() {
   const dispatch = useAppDispatch();
@@ -82,17 +82,7 @@ export default function HomePage() {
           </View>
         </View>
         <Divider style={styles.divider} />
-        <ListSection
-          title="Recent Transactions"
-          items={records.map((record, index) => ({
-            name: record.accountId || 'No Account',
-            value: record.amount.toString(),
-            icon: record.type === 'EXPENSE' ? 'minus' : 'plus',
-            onPress: () => {
-              router.push(`/home/record/${record.id}`);
-            },
-          }))}
-        />
+        <RecordList title="Recent Transactions" records={records} />
       </ScrollView>
       <FAB
         style={styles.fab}
