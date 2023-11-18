@@ -19,6 +19,7 @@ export interface Record {
   amount: number;
   currency: keyof typeof currencySymbolMap;
   accountId: string | null;
+  targetAccountId: string | null;
   categoryId: string | null;
   type: 'EXPENSE' | 'INCOME' | 'TRANSFER';
   date: string; // ISO date string

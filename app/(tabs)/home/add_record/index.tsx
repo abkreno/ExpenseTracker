@@ -24,6 +24,7 @@ import {
   selectAmount,
   selectNotes,
   saveRecord,
+  selectTargetAccount,
 } from 'features/recordForm/recordFormSlice';
 import { useAppDispatch } from 'features/hooks';
 import { Record } from 'features/record/recordSlice';
@@ -37,9 +38,14 @@ export default function AddRecordPage() {
   const currency = useSelector(selectCurrency);
   const type = useSelector(selectType);
   const recordAccount = useSelector(selectAccount);
+  const recordTargetAccount = useSelector(selectTargetAccount);
   const recordCategory = useSelector(selectCategory);
   const canSaveRecord = useMemo(() => {
-    return !!(Math.abs(amount) > 0 && recordAccount && recordCategory);
+    const can = !!(Math.abs(amount) > 0 && recordAccount);
+    if (type === 'TRANSFER') {
+      return can && !!recordTargetAccount;
+    }
+    return can && !!recordCategory;
   }, [amount, recordAccount, recordCategory]);
   const dispatch = useAppDispatch();
   // Function to handle record submission
@@ -104,25 +110,35 @@ export default function AddRecordPage() {
           </View>
           <ListSection
             title="General"
-            items={[
-              {
-                name: 'Select Account',
-                route: '/home/add_record/accounts',
-                icon: 'bank',
-                value: recordAccount?.name || '',
-                showRightIcon: true,
-                isRequired: true,
-              },
-              {
-                name: 'Select Category',
-                route: '/home/add_record/categories',
-                icon: recordCategory?.icon || 'help',
-                color: recordCategory?.color || theme.colors.primary,
-                value: recordCategory?.name || '',
-                showRightIcon: true,
-                isRequired: true,
-              },
-            ]}
+            items={
+              [
+                {
+                  name: type === 'TRANSFER' ? 'From' : 'Account',
+                  route: '/home/add_record/accounts',
+                  icon: 'bank',
+                  value: recordAccount?.name || '',
+                  showRightIcon: true,
+                  isRequired: true,
+                },
+                type === 'TRANSFER' && {
+                  name: 'Target Account',
+                  route: '/home/add_record/accounts?target=true',
+                  icon: 'bank',
+                  value: recordTargetAccount?.name || '',
+                  showRightIcon: true,
+                  isRequired: true,
+                },
+                type !== 'TRANSFER' && {
+                  name: 'Select Category',
+                  route: '/home/add_record/categories',
+                  icon: recordCategory?.icon || 'help',
+                  color: recordCategory?.color || theme.colors.primary,
+                  value: recordCategory?.name || '',
+                  showRightIcon: true,
+                  isRequired: true,
+                },
+              ].filter(Boolean) as any[]
+            }
           />
 
           <ListSection

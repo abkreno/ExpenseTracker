@@ -15,6 +15,7 @@ export default function ListSection({
     icon?: string | IconSource;
     value: string;
     color?: string;
+    rightIconName?: string;
     showRightIcon?: boolean;
     isRequired?: boolean;
     onPress?: () => void;
@@ -70,7 +71,7 @@ export default function ListSection({
                   <List.Icon
                     {...props}
                     color={theme.colors.onBackground}
-                    icon="chevron-right"
+                    icon={item.rightIconName || 'chevron-right'}
                   />
                 )}
               </>

@@ -89,14 +89,7 @@ export const accountFormSlice = createSlice({
       state.status = 'loading';
     });
     builder.addCase(saveAccount.fulfilled, (state) => {
-      state.status = 'idle';
-      state.name = '';
-      state.initialBalance = 0;
-      state.color = '';
-      state.balance.amount = 0;
-      state.balance.currency = 'USD';
-      state.balance.lastUpdatedAt = '';
-      state.type = 'CASH';
+      state = { ...initialState };
     });
   },
 });

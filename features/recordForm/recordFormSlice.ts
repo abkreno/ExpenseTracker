@@ -8,7 +8,6 @@ import { RootState } from 'features/store';
 
 interface RecordFormState extends Omit<Record, 'id'> {
   status: 'idle' | 'loading' | 'failed';
-  targetAccountId?: string | null;
 }
 
 const initialState: RecordFormState = {
@@ -66,6 +65,9 @@ export const recordFormSlice = createSlice({
     setAccountId: (state, action: PayloadAction<string | null>) => {
       state.accountId = action.payload;
     },
+    setTargetAccountId: (state, action: PayloadAction<string | null>) => {
+      state.targetAccountId = action.payload;
+    },
     setCategoryId: (state, action: PayloadAction<string | null>) => {
       state.categoryId = action.payload;
     },
@@ -84,7 +86,7 @@ export const recordFormSlice = createSlice({
       state.status = 'loading';
     });
     builder.addCase(saveRecord.fulfilled, (state) => {
-      state.status = 'idle';
+      state = { ...initialState };
     });
     builder.addCase(loadAccountsAsync.fulfilled, (state, action) => {
       if (!state.accountId) {
@@ -95,11 +97,21 @@ export const recordFormSlice = createSlice({
 });
 
 export const selectType = (state: RootState) => state.recordForm.type;
+
 export const selectAccount = (state: RootState) => {
   const { accountId } = state.recordForm;
   if (!accountId) return null;
   return state.account.accounts.find((account) => account.id === accountId);
 };
+
+export const selectTargetAccount = (state: RootState) => {
+  const { targetAccountId } = state.recordForm;
+  if (!targetAccountId) return null;
+  return state.account.accounts.find(
+    (account) => account.id === targetAccountId
+  );
+};
+
 export const selectCategory = (state: RootState) => {
   const { categoryId } = state.recordForm;
   if (!categoryId) return null;
@@ -118,11 +130,14 @@ export const selectNotes = (state: RootState) => state.recordForm.notes;
 export const {
   setType,
   setAccountId,
+  setTargetAccountId,
   setCategoryId,
   setAmount,
   setCurrency,
   setNotes,
   setDate,
+  setPhoto,
+  setPayee,
 } = recordFormSlice.actions;
 
 export default recordFormSlice.reducer;
