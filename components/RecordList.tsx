@@ -4,6 +4,8 @@ import { Record } from 'features/record/recordSlice';
 import { router } from 'expo-router';
 import { StyleProp, View, ViewStyle } from 'react-native';
 import { Divider, Text, useTheme } from 'react-native-paper';
+import { useAppDispatch } from 'features/hooks';
+import { setEditRecord } from 'features/recordForm/recordFormSlice';
 
 export default function RecordList({
   title = 'Recent Records',
@@ -41,7 +43,9 @@ export default function RecordList({
             <RecordListItem
               key={index}
               record={record}
-              onPress={() => router.push(`${record.id}`)}
+              onPress={() => {
+                router.push('/home/add_record?editId=' + record.id);
+              }}
               showDivider={index !== records.length - 1}
             />
           ))

@@ -27,12 +27,17 @@ export const accountColorsMap = {
 
 interface AccountFormState extends Omit<Account, 'id'> {
   status: 'idle' | 'loading' | 'failed';
+  editAccountId?: string | null;
 }
 
 const initialState: AccountFormState = {
   status: 'idle',
+  editAccountId: null,
   name: '',
-  initialBalance: 0,
+  initialBalance: {
+    type: 'POSITIVE',
+    amount: 0,
+  },
   color: accountColorsMap['#FFCDD2'],
   balance: {
     amount: 0,
@@ -48,13 +53,20 @@ export const saveAccount = createAsyncThunk<
   { state: { accountForm: AccountFormState } }
 >('accountForm/saveAccount', async (_, { getState }) => {
   const { accountForm } = getState();
-  const { status, ...account } = accountForm;
+  const { status, editAccountId, ...account } = accountForm;
   const accounts = await loadAccounts();
   const uniqueId = Math.max(...accounts.map((account) => +account.id), 0) + 1;
+  const id = editAccountId ? editAccountId : uniqueId.toString();
   const updatedAccount = {
-    id: uniqueId.toString(),
+    id,
     ...account,
   };
+  updatedAccount.balance.lastUpdatedAt = new Date().toISOString();
+  if (editAccountId) {
+    const index = accounts.findIndex((account) => account.id === editAccountId);
+    accounts[index] = updatedAccount;
+    return accounts;
+  }
   return [...accounts, updatedAccount];
 });
 
@@ -68,7 +80,10 @@ export const accountFormSlice = createSlice({
     setName: (state, action: PayloadAction<string>) => {
       state.name = action.payload;
     },
-    setInitialBalance: (state, action: PayloadAction<number>) => {
+    setInitialBalance: (
+      state,
+      action: PayloadAction<Account['initialBalance']>
+    ) => {
       state.initialBalance = action.payload;
     },
     setColor: (state, action: PayloadAction<string>) => {
@@ -82,6 +97,14 @@ export const accountFormSlice = createSlice({
       action: PayloadAction<keyof typeof currencySymbolMap>
     ) => {
       state.balance.currency = action.payload;
+    },
+    setEditAccount: (state, action: PayloadAction<Account>) => {
+      state.editAccountId = action.payload.id;
+      state.type = action.payload.type;
+      state.name = action.payload.name;
+      state.initialBalance = action.payload.initialBalance;
+      state.color = action.payload.color;
+      state.balance = action.payload.balance;
     },
   },
   extraReducers: (builder) => {
@@ -112,6 +135,7 @@ export const {
   setColor,
   setInitialBalance,
   setName,
+  setEditAccount,
 } = accountFormSlice.actions;
 
 export default accountFormSlice.reducer;

@@ -1,11 +1,11 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import {
   View,
   StyleSheet,
   Keyboard,
   TouchableWithoutFeedback,
 } from 'react-native';
-import { Stack, router } from 'expo-router';
+import { Stack, router, useLocalSearchParams } from 'expo-router';
 import {
   Button,
   MD3Theme,
@@ -25,9 +25,10 @@ import {
   selectNotes,
   saveRecord,
   selectTargetAccount,
+  setEditRecord,
 } from 'features/recordForm/recordFormSlice';
 import { useAppDispatch } from 'features/hooks';
-import { Record } from 'features/record/recordSlice';
+import { Record, selectRecordById } from 'features/record/recordSlice';
 import AmountInput from 'components/AmountInput';
 
 export default function AddRecordPage() {
@@ -48,6 +49,13 @@ export default function AddRecordPage() {
     return can && !!recordCategory;
   }, [amount, recordAccount, recordCategory]);
   const dispatch = useAppDispatch();
+  const { editId } = useLocalSearchParams<{ editId?: string }>();
+  const recordTemplate = editId ? useSelector(selectRecordById(editId)) : null;
+  useEffect(() => {
+    if (recordTemplate) {
+      dispatch(setEditRecord(recordTemplate));
+    }
+  }, [recordTemplate]);
   // Function to handle record submission
   const handleSave = () => {
     dispatch(saveRecord());

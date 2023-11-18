@@ -1,9 +1,11 @@
 import Icon from 'components/Icon';
 import RecordList from 'components/RecordList';
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { selectAccountById } from 'features/account/accountSlice';
+import { setEditAccount } from 'features/accountForm/accountFormSlice';
+import { useAppDispatch } from 'features/hooks';
 import { selectRecordsByAccount } from 'features/record/recordSlice';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { MD3Theme, Text, useTheme } from 'react-native-paper';
 import { shallowEqual, useSelector } from 'react-redux';
 
@@ -12,25 +14,28 @@ export default function AccountPage() {
     account: string;
   }>();
   const account = useSelector(selectAccountById(accountId || ''));
-
+  if (!account) {
+    return router.replace('/home');
+  }
   const theme = useTheme();
   const styles = makeStyles(theme);
   const accountRecords = useSelector(
     selectRecordsByAccount(accountId || ''),
     shallowEqual
   );
+  const dispatch = useAppDispatch();
   return (
     <View
       style={{
         ...styles.container,
-        backgroundColor: account?.color || theme.colors.background,
+        backgroundColor: theme.colors.background,
       }}
     >
       <Stack.Screen options={{ headerShown: true, title: '' }} />
       <View
         style={{
           ...styles.headerContainer,
-          backgroundColor: account?.color || theme.colors.primaryContainer,
+          backgroundColor: theme.colors.primaryContainer,
         }}
       >
         <View style={styles.accountNameContainer}>
@@ -38,10 +43,17 @@ export default function AccountPage() {
           <Text style={styles.accountName}>{account?.name}</Text>
         </View>
         <Text style={styles.accountBalance}>{account?.balance.amount}</Text>
+        <Pressable
+          onPress={() => {
+            router.push(`/home/add_account?editId=${account?.id}`);
+          }}
+        >
+          <Icon name="pencil" />
+        </Pressable>
       </View>
       <RecordList
         records={accountRecords}
-        styles={{ backgroundColor: account?.color || theme.colors.background }}
+        styles={{ backgroundColor: theme.colors.background }}
       />
     </View>
   );

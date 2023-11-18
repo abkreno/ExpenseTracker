@@ -1,6 +1,6 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Stack, router } from 'expo-router';
+import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { Button, MD3Theme, useTheme } from 'react-native-paper';
 import ListSection from 'components/ListSection';
 import {
@@ -9,15 +9,26 @@ import {
   selectColor,
   selectName,
   selectType,
+  setEditAccount,
 } from 'features/accountForm/accountFormSlice';
 import { useAppDispatch } from 'features/hooks';
 import { useSelector } from 'react-redux';
 import Icon from 'components/Icon';
+import { selectAccountById } from 'features/account/accountSlice';
 
 export default function AddAccount() {
   const theme = useTheme();
   const styles = makeStyles(theme);
   const dispatch = useAppDispatch();
+  const { editId } = useLocalSearchParams<{ editId?: string }>();
+  const accountTemplate = editId
+    ? useSelector(selectAccountById(editId))
+    : null;
+  useEffect(() => {
+    if (accountTemplate) {
+      dispatch(setEditAccount(accountTemplate));
+    }
+  }, [accountTemplate]);
   const accountName = useSelector(selectName);
   const accountType = useSelector(selectType);
   const balance = useSelector(selectBalance);

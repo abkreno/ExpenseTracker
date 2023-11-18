@@ -1,0 +1,3 @@
+- Edit record/account
+- Confirmation modal before closing add record/account form
+- Reset state on closing add record/account form

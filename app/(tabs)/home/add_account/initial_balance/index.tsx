@@ -1,5 +1,6 @@
 import AmountInput from 'components/AmountInput';
 import { Stack, router } from 'expo-router';
+import { Account } from 'features/account/accountSlice';
 import {
   selectBalance,
   selectInitialBalance,
@@ -7,9 +8,6 @@ import {
   setInitialBalance,
 } from 'features/accountForm/accountFormSlice';
 import { useAppDispatch } from 'features/hooks';
-import { Record } from 'features/record/recordSlice';
-import { setAmount } from 'features/recordForm/recordFormSlice';
-import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { MD3Theme, SegmentedButtons, useTheme } from 'react-native-paper';
 import { useSelector } from 'react-redux';
@@ -20,9 +18,6 @@ export default function AddAccountInitialBalance() {
   const styles = makeStyles(theme);
   const initialBalance = useSelector(selectInitialBalance);
   const currency = useSelector(selectBalance).currency;
-  const [type, setType] = useState<Record['type']>(
-    initialBalance < 0 ? 'EXPENSE' : 'INCOME'
-  );
   return (
     <View style={styles.container}>
       <View style={styles.navigationContainer}>
@@ -39,22 +34,22 @@ export default function AddAccountInitialBalance() {
         />
         <View style={styles.topFormContainer}>
           <SegmentedButtons
-            value={type}
+            value={initialBalance.type}
             onValueChange={(value) => {
-              setType(value as Record['type']);
-              const amount = initialBalance * (value === 'EXPENSE' ? -1 : 1);
-              dispatch(setInitialBalance(amount));
-              dispatch(setBalanceAmount(amount));
+              const type = value as Account['initialBalance']['type'];
+              dispatch(setInitialBalance({ ...initialBalance, type }));
+              const sign = type === 'POSITIVE' ? 1 : -1;
+              dispatch(setBalanceAmount(sign * initialBalance.amount));
             }}
             buttons={[
               {
-                value: 'INCOME',
+                value: 'POSITIVE',
                 label: 'Positive',
                 checkedColor: theme.colors.primary,
                 uncheckedColor: theme.colors.onPrimary,
               },
               {
-                value: 'EXPENSE',
+                value: 'NEGATIVE',
                 label: 'Negative',
                 checkedColor: theme.colors.primary,
                 uncheckedColor: theme.colors.onPrimary,
@@ -62,12 +57,16 @@ export default function AddAccountInitialBalance() {
             ]}
           />
           <AmountInput
-            amount={initialBalance}
+            amount={initialBalance.amount}
             currency={currency}
-            type={type}
+            type={initialBalance.type === 'POSITIVE' ? 'INCOME' : 'EXPENSE'}
             onChange={(amount: number) => {
-              setType(amount < 0 ? 'EXPENSE' : 'INCOME');
-              dispatch(setInitialBalance(amount));
+              dispatch(
+                setInitialBalance({
+                  ...initialBalance,
+                  amount: Math.abs(amount),
+                })
+              );
               dispatch(setBalanceAmount(amount));
             }}
             onCurrencyPress={() => {}}

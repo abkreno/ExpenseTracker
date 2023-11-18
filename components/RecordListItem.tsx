@@ -63,7 +63,7 @@ const makeStyles = (theme: MD3Theme) =>
       alignItems: 'center',
       flexDirection: 'row',
       paddingVertical: 16,
-      backgroundColor: theme.colors.primaryContainer,
+      backgroundColor: theme.colors.elevation.level2,
       gap: 16,
     },
     recordTextContainer: {

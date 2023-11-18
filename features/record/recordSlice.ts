@@ -100,5 +100,6 @@ export const selectRecords = (state: RootState) => state.record.records;
 export const selectRecordsByAccount =
   (accountId: string) => (state: RootState) =>
     state.record.records.filter((record) => record.accountId === accountId);
-
+export const selectRecordById = (recordId: string) => (state: RootState) =>
+  state.record.records.find((record) => record.id === recordId);
 export default recordSlice.reducer;

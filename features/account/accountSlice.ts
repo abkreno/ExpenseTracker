@@ -18,7 +18,10 @@ export const accountIcons = {
 export interface Account {
   id: string;
   name: string;
-  initialBalance: number;
+  initialBalance: {
+    type: 'NEGATIVE' | 'POSITIVE';
+    amount: number;
+  };
   balance: {
     amount: number;
     currency: keyof typeof currencySymbolMap;

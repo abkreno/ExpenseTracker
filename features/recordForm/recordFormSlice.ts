@@ -8,9 +8,12 @@ import { RootState } from 'features/store';
 
 interface RecordFormState extends Omit<Record, 'id'> {
   status: 'idle' | 'loading' | 'failed';
+  editRecordId?: string | null;
 }
 
 const initialState: RecordFormState = {
+  status: 'idle',
+  editRecordId: null,
   type: 'EXPENSE',
   amount: 0,
   currency: 'EGP',
@@ -21,7 +24,6 @@ const initialState: RecordFormState = {
   notes: '',
   payee: '',
   photo: null,
-  status: 'idle',
 };
 
 export const saveRecord = createAsyncThunk<
@@ -33,10 +35,16 @@ export const saveRecord = createAsyncThunk<
   const { status, ...record } = recordForm;
   const records = await loadRecords();
   const uniqueId = Math.max(...records.map((record) => +record.id), 0) + 1;
+  const id = recordForm.editRecordId ? recordForm.editRecordId : uniqueId;
   const updatedRecord = {
     id: uniqueId.toString(),
     ...record,
   };
+  if (recordForm.editRecordId) {
+    const index = records.findIndex((record) => record.id === id);
+    records[index] = updatedRecord;
+    return records;
+  }
   return [...records, updatedRecord];
 });
 
@@ -79,6 +87,19 @@ export const recordFormSlice = createSlice({
     },
     setPhoto: (state, action: PayloadAction<string | null>) => {
       state.photo = action.payload;
+    },
+    setEditRecord: (state, action: PayloadAction<Record>) => {
+      state.editRecordId = action.payload.id;
+      state.type = action.payload.type;
+      state.amount = action.payload.amount;
+      state.currency = action.payload.currency;
+      state.accountId = action.payload.accountId;
+      state.targetAccountId = action.payload.targetAccountId;
+      state.categoryId = action.payload.categoryId;
+      state.date = action.payload.date;
+      state.notes = action.payload.notes;
+      state.payee = action.payload.payee;
+      state.photo = action.payload.photo;
     },
   },
   extraReducers: (builder) => {
@@ -138,6 +159,7 @@ export const {
   setDate,
   setPhoto,
   setPayee,
+  setEditRecord,
 } = recordFormSlice.actions;
 
 export default recordFormSlice.reducer;
