@@ -3,13 +3,25 @@ import { View, StyleSheet } from 'react-native';
 import { Stack, router } from 'expo-router';
 import { Button, MD3Theme, useTheme } from 'react-native-paper';
 import ListSection from 'components/ListSection';
-import { saveAccount } from 'features/accountForm/accountFormSlice';
+import {
+  saveAccount,
+  selectBalance,
+  selectColor,
+  selectName,
+  selectType,
+} from 'features/accountForm/accountFormSlice';
 import { useAppDispatch } from 'features/hooks';
+import { useSelector } from 'react-redux';
+import Icon from 'components/Icon';
 
 export default function AddAccount() {
   const theme = useTheme();
   const styles = makeStyles(theme);
   const dispatch = useAppDispatch();
+  const accountName = useSelector(selectName);
+  const accountType = useSelector(selectType);
+  const balance = useSelector(selectBalance);
+  const color = useSelector(selectColor);
   // Function to handle record submission
   const handleSave = () => {
     dispatch(saveAccount());
@@ -17,8 +29,8 @@ export default function AddAccount() {
   };
 
   const canSaveAccount = useMemo(() => {
-    return true;
-  }, []);
+    return accountName && accountType && balance.currency;
+  }, [accountName, accountType, balance.currency]);
 
   return (
     <View style={styles.container}>
@@ -33,27 +45,31 @@ export default function AddAccount() {
           items={[
             {
               name: 'Account Name',
-              route: '/',
-              iconName: 'account',
-              value: '',
+              route: '/home/add_account/name',
+              icon: 'account',
+              showRightIcon: true,
+              value: accountName,
             },
             {
               name: 'Account Type',
-              route: '/',
-              iconName: 'account',
-              value: '',
+              route: '/home/add_account/type',
+              icon: 'bank',
+              showRightIcon: true,
+              value: accountType,
             },
             {
               name: 'Initial Balance',
-              route: '/',
-              iconName: 'account',
-              value: '',
+              route: '/home/add_account/initial_balance',
+              icon: 'cash-multiple',
+              showRightIcon: true,
+              value: balance.amount.toString(),
             },
             {
               name: 'Currency',
-              route: '/',
-              iconName: 'account',
-              value: '',
+              route: '/home/add_account/currencies',
+              icon: 'currency-usd',
+              showRightIcon: true,
+              value: balance.currency,
             },
           ]}
         />
@@ -63,8 +79,8 @@ export default function AddAccount() {
           items={[
             {
               name: 'Color',
-              route: '/',
-              iconName: 'account',
+              route: '/home/add_account/color',
+              icon: () => <Icon name="circle" color={color} />,
               value: '',
             },
           ]}

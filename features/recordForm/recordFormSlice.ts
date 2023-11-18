@@ -33,7 +33,7 @@ export const saveRecord = createAsyncThunk<
   const { recordForm } = getState();
   const { status, ...record } = recordForm;
   const records = await loadRecords();
-  const uniqueId = Math.max(...records.map((record) => +record.id)) + 1;
+  const uniqueId = Math.max(...records.map((record) => +record.id), 0) + 1;
   const updatedRecord = {
     id: uniqueId.toString(),
     ...record,
@@ -88,7 +88,7 @@ export const recordFormSlice = createSlice({
     });
     builder.addCase(loadAccountsAsync.fulfilled, (state, action) => {
       if (!state.accountId) {
-        state.accountId = action.payload[0].id || null;
+        state.accountId = action.payload[0]?.id || null;
       }
     });
   },

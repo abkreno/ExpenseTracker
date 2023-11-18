@@ -8,14 +8,14 @@ import { setAccountId } from 'features/recordForm/recordFormSlice';
 import { View } from 'react-native';
 import { useSelector } from 'react-redux';
 
-export default function AccountPage() {
+export default function SelectRecordAccountPage() {
   const accounts = useSelector(selectAccounts);
   const dispatch = useAppDispatch();
   return (
     <View>
       <Stack.Screen
         options={{
-          title: 'Accounts',
+          title: 'Add Record',
         }}
       />
       <ListSection
@@ -31,7 +31,7 @@ export default function AccountPage() {
               router.push('/home/add_record');
             }
           },
-          iconName: account.type === 'CASH' ? 'cash-multiple' : 'bank',
+          icon: account.type === 'CASH' ? 'cash-multiple' : 'bank',
           value: '',
         }))}
       />

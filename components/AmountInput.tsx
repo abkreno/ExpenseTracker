@@ -27,12 +27,14 @@ export default function AmountInput({
   type,
   onChange,
   onCurrencyPress,
+  disableCurrency,
 }: {
   amount: number;
   currency: string;
   type: Record['type'];
   onChange: (amount: number) => void;
   onCurrencyPress: () => void;
+  disableCurrency?: boolean;
 }) {
   const [amountStr, setAmountStr] = useState(`${amount}`);
   const [selection, setSelection] = useState({
@@ -103,13 +105,16 @@ export default function AmountInput({
       <Pressable
         onPress={onCurrencyPress}
         style={{
-          backgroundColor: theme.colors.onPrimary,
+          backgroundColor: disableCurrency
+            ? theme.colors.onPrimaryContainer
+            : theme.colors.onPrimary,
           justifyContent: 'center',
           alignItems: 'center',
           paddingVertical: 5,
           paddingHorizontal: 10,
           borderRadius: 20,
         }}
+        disabled={disableCurrency}
       >
         <Text
           style={{

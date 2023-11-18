@@ -1,9 +1,29 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { loadAccounts } from 'features/account/accountAPI';
-import { loadAccountsAsync } from 'features/account/accountSlice';
-import { selectFlatCategories } from 'features/category/categorySlice';
 import { Account } from 'features/account/accountSlice';
 import { RootState } from 'features/store';
+import { currencySymbolMap } from 'features/record/recordSlice';
+
+export const accountColorsMap = {
+  '#FFCDD2': '#FFCDD2',
+  '#F8BBD0': '#F8BBD0',
+  '#E1BEE7': '#E1BEE7',
+  '#D1C4E9': '#D1C4E9',
+  '#C5CAE9': '#C5CAE9',
+  '#BBDEFB': '#BBDEFB',
+  '#B3E5FC': '#B3E5FC',
+  '#B2EBF2': '#B2EBF2',
+  '#B2DFDB': '#B2DFDB',
+  '#C8E6C9': '#C8E6C9',
+  '#DCEDC8': '#DCEDC8',
+  '#F0F4C3': '#F0F4C3',
+  '#FFF9C4': '#FFF9C4',
+  '#FFECB3': '#FFECB3',
+  '#FFE0B2': '#FFE0B2',
+  '#FFCCBC': '#FFCCBC',
+  '#D7CCC8': '#D7CCC8',
+  '#F5F5F5': '#F5F5F5',
+};
 
 interface AccountFormState extends Omit<Account, 'id'> {
   status: 'idle' | 'loading' | 'failed';
@@ -13,10 +33,10 @@ const initialState: AccountFormState = {
   status: 'idle',
   name: '',
   initialBalance: 0,
-  color: '',
+  color: accountColorsMap['#FFCDD2'],
   balance: {
     amount: 0,
-    currency: '',
+    currency: 'USD',
     lastUpdatedAt: '',
   },
   type: 'CASH',
@@ -30,7 +50,7 @@ export const saveAccount = createAsyncThunk<
   const { accountForm } = getState();
   const { status, ...account } = accountForm;
   const accounts = await loadAccounts();
-  const uniqueId = Math.max(...accounts.map((account) => +account.id)) + 1;
+  const uniqueId = Math.max(...accounts.map((account) => +account.id), 0) + 1;
   const updatedAccount = {
     id: uniqueId.toString(),
     ...account,
@@ -54,15 +74,14 @@ export const accountFormSlice = createSlice({
     setColor: (state, action: PayloadAction<string>) => {
       state.color = action.payload;
     },
-    setBalance: (
+    setBalanceAmount: (state, action: PayloadAction<number>) => {
+      state.balance.amount = action.payload;
+    },
+    setBalanceCurrency: (
       state,
-      action: PayloadAction<{
-        amount: number;
-        currency: string;
-        lastUpdatedAt: string;
-      }>
+      action: PayloadAction<keyof typeof currencySymbolMap>
     ) => {
-      state.balance = action.payload;
+      state.balance.currency = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -71,6 +90,13 @@ export const accountFormSlice = createSlice({
     });
     builder.addCase(saveAccount.fulfilled, (state) => {
       state.status = 'idle';
+      state.name = '';
+      state.initialBalance = 0;
+      state.color = '';
+      state.balance.amount = 0;
+      state.balance.currency = 'USD';
+      state.balance.lastUpdatedAt = '';
+      state.type = 'CASH';
     });
   },
 });
@@ -86,6 +112,13 @@ export const selectColor = (state: RootState) => state.accountForm.color;
 
 export const selectBalance = (state: RootState) => state.accountForm.balance;
 
-export const { setType } = accountFormSlice.actions;
+export const {
+  setType,
+  setBalanceAmount,
+  setBalanceCurrency,
+  setColor,
+  setInitialBalance,
+  setName,
+} = accountFormSlice.actions;
 
 export default accountFormSlice.reducer;

@@ -12,6 +12,7 @@ export default function AccountPage() {
     account: string;
   }>();
   const account = useSelector(selectAccountById(accountId || ''));
+
   const theme = useTheme();
   const styles = makeStyles(theme);
   const accountRecords = useSelector(
@@ -19,18 +20,29 @@ export default function AccountPage() {
     shallowEqual
   );
   return (
-    <View style={styles.container}>
-      <Stack.Screen
-        options={{ headerShown: true, title: account?.name || '' }}
-      />
-      <View style={styles.headerContainer}>
+    <View
+      style={{
+        ...styles.container,
+        backgroundColor: account?.color || theme.colors.background,
+      }}
+    >
+      <Stack.Screen options={{ headerShown: true, title: '' }} />
+      <View
+        style={{
+          ...styles.headerContainer,
+          backgroundColor: account?.color || theme.colors.primaryContainer,
+        }}
+      >
         <View style={styles.accountNameContainer}>
           <Icon name={account?.type === 'CASH' ? 'cash-multiple' : 'bank'} />
           <Text style={styles.accountName}>{account?.name}</Text>
         </View>
         <Text style={styles.accountBalance}>{account?.balance.amount}</Text>
       </View>
-      <RecordList records={accountRecords} />
+      <RecordList
+        records={accountRecords}
+        styles={{ backgroundColor: account?.color || theme.colors.background }}
+      />
     </View>
   );
 }

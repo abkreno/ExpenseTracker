@@ -1,6 +1,5 @@
 import { Stack } from 'expo-router';
-import { View } from 'react-native';
-import { MD3DarkTheme, useTheme } from 'react-native-paper';
+import { useTheme } from 'react-native-paper';
 
 export default function HomeLayout() {
   const theme = useTheme();

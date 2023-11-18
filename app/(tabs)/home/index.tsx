@@ -44,7 +44,9 @@ export default function HomePage() {
           {accounts.map((account, index) => (
             <TouchableRipple
               key={index}
-              style={styles.card}
+              style={{
+                ...styles.card,
+              }}
               onPress={() => {
                 router.push(`/home/account/${account.id}`);
               }}
@@ -53,6 +55,7 @@ export default function HomePage() {
                 <Icon
                   source={account.type === 'CASH' ? 'cash' : 'bank'}
                   size={24}
+                  color={theme.colors.onPrimaryContainer}
                 />
                 <Text style={styles.accountText}>{account.name}</Text>
                 <Text style={styles.accountAmount}>
@@ -108,7 +111,7 @@ const makeStyles = (theme: MD3Theme) =>
     },
     navigationContainer: {},
     card: {
-      backgroundColor: theme.colors.primaryContainer,
+      backgroundColor: theme.colors.elevation.level3,
       marginHorizontal: 10,
       paddingHorizontal: 10,
       borderRadius: 10,

@@ -1,6 +1,8 @@
 import { Account } from './accountSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+// AsyncStorage.clear();
+
 export function backupAccounts(accounts: Account[]) {
   // save accounts to local storage
   return AsyncStorage.setItem('accounts', JSON.stringify(accounts));

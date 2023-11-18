@@ -3,34 +3,38 @@
 import ListSection from 'components/ListSection';
 import { Stack, router } from 'expo-router';
 import { useAppDispatch } from 'features/hooks';
-import { currencySymbolMap } from 'features/record/recordSlice';
-import { setCurrency } from 'features/recordForm/recordFormSlice';
+import {} from 'features/record/recordSlice';
+import {
+  accountColorsMap,
+  setColor,
+} from 'features/accountForm/accountFormSlice';
 import { View } from 'react-native';
+import Icon from 'components/Icon';
 
-export default function SelectRecordCurrencyPage() {
-  const currencies = currencySymbolMap;
+export default function SelectAccountColorPage() {
+  const colors = accountColorsMap;
   const dispatch = useAppDispatch();
   return (
     <View>
       <Stack.Screen
         options={{
-          title: '',
+          title: 'Add Account',
         }}
       />
       <ListSection
-        title="Select Currency"
-        items={Object.keys(currencies).map((currency) => ({
-          name: currency,
+        title="Select Color"
+        items={Object.keys(colors).map((color) => ({
+          name: color,
           onPress: () => {
-            // Handle selecting the account
-            dispatch(setCurrency(currency as keyof typeof currencySymbolMap));
+            dispatch(setColor(color as keyof typeof accountColorsMap));
             if (router.canGoBack()) {
               router.back();
             } else {
-              router.push('/home/add_record');
+              router.push('/home/add_account');
             }
           },
           value: '',
+          icon: () => <Icon name="circle" color={color} />,
         }))}
       />
     </View>

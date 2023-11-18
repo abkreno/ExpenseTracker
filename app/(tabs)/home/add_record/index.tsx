@@ -29,7 +29,7 @@ import { useAppDispatch } from 'features/hooks';
 import { Record } from 'features/record/recordSlice';
 import AmountInput from 'components/AmountInput';
 
-export default function AddRecord() {
+export default function AddRecordPage() {
   const theme = useTheme();
   const recordType = useSelector(selectType);
   const styles = makeStyles(theme, recordType);
@@ -108,7 +108,7 @@ export default function AddRecord() {
               {
                 name: 'Select Account',
                 route: '/home/add_record/accounts',
-                iconName: 'bank',
+                icon: 'bank',
                 value: recordAccount?.name || '',
                 showRightIcon: true,
                 isRequired: true,
@@ -116,7 +116,7 @@ export default function AddRecord() {
               {
                 name: 'Select Category',
                 route: '/home/add_record/categories',
-                iconName: recordCategory?.icon || 'help',
+                icon: recordCategory?.icon || 'help',
                 color: recordCategory?.color || theme.colors.primary,
                 value: recordCategory?.name || '',
                 showRightIcon: true,
@@ -131,7 +131,7 @@ export default function AddRecord() {
               {
                 name: 'Notes',
                 route: '/home/add_record/notes',
-                iconName: 'note',
+                icon: 'note',
                 value: useSelector(selectNotes),
                 showRightIcon: true,
               },

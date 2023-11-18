@@ -1,24 +1,24 @@
 import { Stack } from 'expo-router';
+import { selectName, setName } from 'features/accountForm/accountFormSlice';
 import { useAppDispatch } from 'features/hooks';
-import { selectNotes, setNotes } from 'features/recordForm/recordFormSlice';
 import { View } from 'react-native';
 import { TextInput } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 
-export default function RecordNotesPage() {
-  const notes = useSelector(selectNotes);
+export default function AccountNamePage() {
+  const name = useSelector(selectName);
   const dispatch = useAppDispatch();
   return (
     <View>
       <Stack.Screen
         options={{
-          title: 'Notes',
+          title: 'Account Name',
         }}
       />
       <TextInput
         autoFocus
-        value={notes}
-        onChangeText={(text) => dispatch(setNotes(text))}
+        value={name}
+        onChangeText={(text) => dispatch(setName(text))}
         style={{
           textAlign: 'center',
           height: 200,

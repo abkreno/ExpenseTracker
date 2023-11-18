@@ -3,33 +3,32 @@
 import ListSection from 'components/ListSection';
 import { Stack, router } from 'expo-router';
 import { useAppDispatch } from 'features/hooks';
-import { currencySymbolMap } from 'features/record/recordSlice';
-import { setCurrency } from 'features/recordForm/recordFormSlice';
+import { setType } from 'features/accountForm/accountFormSlice';
 import { View } from 'react-native';
+import { accountTypes, accountIcons } from 'features/account/accountSlice';
 
-export default function SelectRecordCurrencyPage() {
-  const currencies = currencySymbolMap;
+export default function SelectAccountTypePage() {
   const dispatch = useAppDispatch();
   return (
     <View>
       <Stack.Screen
         options={{
-          title: '',
+          title: 'Add Account',
         }}
       />
       <ListSection
         title="Select Currency"
-        items={Object.keys(currencies).map((currency) => ({
-          name: currency,
+        items={Object.keys(accountTypes).map((accountType) => ({
+          name: accountType,
           onPress: () => {
-            // Handle selecting the account
-            dispatch(setCurrency(currency as keyof typeof currencySymbolMap));
+            dispatch(setType(accountType as keyof typeof accountTypes));
             if (router.canGoBack()) {
               router.back();
             } else {
-              router.push('/home/add_record');
+              router.push('/home/add_account');
             }
           },
+          icon: accountIcons[accountType as keyof typeof accountTypes],
           value: '',
         }))}
       />

@@ -12,7 +12,7 @@ export default function ListSection({
   items: {
     name: string;
     route?: string;
-    iconName?: string;
+    icon?: string | IconSource;
     value: string;
     color?: string;
     showRightIcon?: boolean;
@@ -40,11 +40,17 @@ export default function ListSection({
               }
             }}
             left={(props) =>
-              item.iconName ? (
+              item.icon ? (
                 <List.Icon
                   {...props}
                   color={item.color || theme.colors.onBackground}
-                  icon={() => <Icon name={item.iconName} color={item.color} />}
+                  icon={
+                    typeof item.icon === 'string'
+                      ? () => (
+                          <Icon name={item.icon as string} color={item.color} />
+                        )
+                      : item.icon
+                  }
                 />
               ) : null
             }

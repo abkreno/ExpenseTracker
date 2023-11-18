@@ -1,18 +1,30 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from 'features/store';
 import { backupAccounts, loadAccounts } from './accountAPI';
+import { currencySymbolMap } from 'features/record/recordSlice';
+import { saveAccount } from 'features/accountForm/accountFormSlice';
 
 // Define the account type
+
+export const accountTypes = {
+  CASH: 'CASH',
+  GENERAL: 'GENERAL',
+} as const;
+
+export const accountIcons = {
+  CASH: 'cash-multiple',
+  GENERAL: 'bank',
+} as const;
 export interface Account {
   id: string;
   name: string;
   initialBalance: number;
   balance: {
     amount: number;
-    currency: string;
+    currency: keyof typeof currencySymbolMap;
     lastUpdatedAt: string;
   };
-  type: 'CASH' | 'GENERAL';
+  type: keyof typeof accountTypes;
   color: string;
 }
 
@@ -75,6 +87,10 @@ export const accountSlice = createSlice({
         state.status = 'idle';
         state.accounts = action.payload;
         state.defaultAccountId = action.payload[0]?.id ?? null;
+      })
+      .addCase(saveAccount.fulfilled, (state, action) => {
+        state.accounts = action.payload;
+        backupAccounts(action.payload);
       });
   },
 });
@@ -84,6 +100,7 @@ export const selectAccounts = (state: RootState) => state.account.accounts;
 export const selectAccountById = (accountId: string) => (state: RootState) => {
   return selectAccounts(state).find((account) => account.id === accountId);
 };
+
 export const selectTotalBalance = (state: RootState) =>
   state.account.accounts.reduce(
     (total, account) => total + account.balance.amount,
