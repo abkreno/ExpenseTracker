@@ -1,10 +1,20 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { loadAccounts } from 'features/account/accountAPI';
-import { loadAccountsAsync } from 'features/account/accountSlice';
+import {
+  createAction,
+  createAsyncThunk,
+  createSlice,
+  Dispatch,
+  nanoid,
+  PayloadAction,
+} from '@reduxjs/toolkit';
+import {
+  loadAccountsAsync,
+  selectAccounts,
+} from 'features/account/accountSlice';
 import { selectFlatCategories } from 'features/category/categorySlice';
-import { backupRecords, loadRecords } from 'features/record/recordAPI';
+import { loadRecords } from 'features/record/recordAPI';
 import { currencySymbolMap, Record } from 'features/record/recordSlice';
 import { RootState } from 'features/store';
+import { useSelector } from 'react-redux';
 
 interface RecordFormState extends Omit<Record, 'id'> {
   status: 'idle' | 'loading' | 'failed';
@@ -34,10 +44,10 @@ export const saveRecord = createAsyncThunk<
   const { recordForm } = getState();
   const { status, ...record } = recordForm;
   const records = await loadRecords();
-  const uniqueId = Math.max(...records.map((record) => +record.id), 0) + 1;
+  const uniqueId = nanoid();
   const id = recordForm.editRecordId ? recordForm.editRecordId : uniqueId;
   const updatedRecord = {
-    id: uniqueId.toString(),
+    id: uniqueId,
     ...record,
   };
   if (recordForm.editRecordId) {
@@ -101,13 +111,24 @@ export const recordFormSlice = createSlice({
       state.payee = action.payload.payee;
       state.photo = action.payload.photo;
     },
+    reset: (state, { payload }: { payload: string | null }) => {
+      state.status = initialState.status;
+      state.editRecordId = initialState.editRecordId;
+      state.type = initialState.type;
+      state.amount = initialState.amount;
+      state.currency = initialState.currency;
+      state.accountId = payload;
+      state.targetAccountId = initialState.targetAccountId;
+      state.categoryId = initialState.categoryId;
+      state.date = initialState.date;
+      state.notes = initialState.notes;
+      state.payee = initialState.payee;
+      state.photo = initialState.photo;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(saveRecord.pending, (state) => {
       state.status = 'loading';
-    });
-    builder.addCase(saveRecord.fulfilled, (state) => {
-      state = { ...initialState };
     });
     builder.addCase(loadAccountsAsync.fulfilled, (state, action) => {
       if (!state.accountId) {
@@ -116,6 +137,14 @@ export const recordFormSlice = createSlice({
     });
   },
 });
+
+export const resetRecordForm =
+  () => (dispatch: Dispatch, getState: () => RootState) => {
+    const state = getState();
+    const accounts = state.account.accounts; // assuming this is the path to your accounts slice
+
+    return dispatch(recordFormSlice.actions.reset(accounts[0]?.id || null));
+  };
 
 export const selectType = (state: RootState) => state.recordForm.type;
 
@@ -147,6 +176,41 @@ export const selectCurrency = (state: RootState) => state.recordForm.currency;
 export const selectDate = (state: RootState) => state.recordForm.date;
 
 export const selectNotes = (state: RootState) => state.recordForm.notes;
+
+const compareRecords = (
+  record1: Partial<RecordFormState>,
+  record2: Partial<RecordFormState>
+) => {
+  // compare two records based on id, amount, currency, accountId, targetAccountId, categoryId, type, date, notes, payee, photo
+  const keys = [
+    'amount',
+    'currency',
+    'accountId',
+    'targetAccountId',
+    'categoryId',
+    'date',
+    'notes',
+    'payee',
+    'photo',
+  ] as (keyof RecordFormState)[];
+  return keys.every((key) => record1[key] === record2[key]);
+};
+
+export const selectIsRecordDirty = (state: RootState) => {
+  // check if record form is different from initial state or initial record if record id is provided
+  const editRecord = state.record.records.find(
+    (record) => record.id === state.recordForm.editRecordId
+  );
+
+  const compareToRecord = editRecord
+    ? editRecord
+    : {
+        ...initialState,
+        accountId: state.account.accounts[0]?.id || null,
+      };
+
+  return !compareRecords(state.recordForm, compareToRecord);
+};
 
 export const {
   setType,

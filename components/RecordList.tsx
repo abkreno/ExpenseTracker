@@ -23,7 +23,7 @@ export default function RecordList({
         flex: 1,
         height: '100%',
         backgroundColor: theme.colors.elevation.level2,
-        padding: 16,
+        paddingTop: 16,
         paddingBottom: 0,
         ...styles,
       }}
@@ -31,6 +31,7 @@ export default function RecordList({
       <Text
         style={{
           ...theme.fonts.titleSmall,
+          paddingHorizontal: 16,
           paddingBottom: 16,
         }}
       >

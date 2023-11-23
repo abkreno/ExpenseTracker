@@ -62,7 +62,7 @@ const makeStyles = (theme: MD3Theme) =>
       justifyContent: 'space-between',
       alignItems: 'center',
       flexDirection: 'row',
-      paddingVertical: 16,
+      padding: 16,
       backgroundColor: theme.colors.elevation.level2,
       gap: 16,
     },

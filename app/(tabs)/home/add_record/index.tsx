@@ -5,7 +5,12 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
 } from 'react-native';
-import { Stack, router, useLocalSearchParams } from 'expo-router';
+import {
+  Stack,
+  router,
+  useLocalSearchParams,
+  useNavigation,
+} from 'expo-router';
 import {
   Button,
   MD3Theme,
@@ -30,6 +35,7 @@ import {
 import { useAppDispatch } from 'features/hooks';
 import { Record, selectRecordById } from 'features/record/recordSlice';
 import AmountInput from 'components/AmountInput';
+import { JsStack } from 'layouts/js-stack';
 
 export default function AddRecordPage() {
   const theme = useTheme();
@@ -66,7 +72,7 @@ export default function AddRecordPage() {
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={styles.container}>
         <View style={styles.navigationContainer}>
-          <Stack.Screen
+          <JsStack.Screen
             options={{
               title: 'Add Record',
               headerStyle: {

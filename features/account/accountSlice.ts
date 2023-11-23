@@ -31,7 +31,7 @@ export interface Account {
   color: string;
 }
 
-interface AccountState {
+export interface AccountState {
   accounts: Account[];
   status: 'idle' | 'loading' | 'failed';
   defaultAccountId: string | null;

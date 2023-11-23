@@ -11,6 +11,7 @@ module.exports = function (api) {
           alias: {
             features: './features',
             components: './components',
+            layouts: './layouts',
           },
         },
       ],

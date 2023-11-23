@@ -45,6 +45,14 @@ export default function AmountInput({
   const textInputRef = useRef<TextInput>(null);
 
   useEffect(() => {
+    setAmountStr(`${amount}`);
+    setSelection({
+      start: `${amount}`.length,
+      end: `${amount}`.length,
+    });
+  }, [amount]);
+
+  useEffect(() => {
     textInputRef.current?.focus();
   }, []);
 

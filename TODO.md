@@ -1,3 +1,9 @@
-- Edit record/account
-- Confirmation modal before closing add record/account form
-- Reset state on closing add record/account form
+- [x] Edit record/account
+- [x] Confirmation modal before closing add record form
+- [] Confirmation modal before closing add account form
+- [x] Reset state on closing add record form
+- [] Reset state on closing add account form
+- [] Update account and total balance based on delete/add record and make sure handling initial balance updates
+- [] Add date picker for records
+- [] sort based on date DESC and show
+- [] show date in record item
